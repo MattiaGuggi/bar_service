@@ -5,9 +5,10 @@ import Search from '../components/Search'
 
 const Drinks = () => {
     const [drinks, setDrinks] = useState(null);
-    const [message, setMessage] = useState('');
-    const [isOpen, setIsOpen] = useState(false);
     const [confirmation, setConfirmation] = useState(null);
+    const [message, setMessage] = useState('');
+    const [selectedIngredient, setSelectedIngredient] = useState('');
+    const [isOpen, setIsOpen] = useState(false);
     const [ingredients, setIngredients] = useState([]);
     const [newIngredients, setNewIngredients] = useState([]);
     const API_URL = import.meta.env.MODE === "development" ? "http://localhost:8080" : "";
@@ -17,7 +18,6 @@ const Drinks = () => {
             const response = await axios.get(`${API_URL}/get-all-drinks`);
 
             setDrinks(response.data.drinks.drinks);
-            console.log(response.data.drinks.drinks);
         } catch(err) {
             console.error('Error fetching all drinks', err);
         }
@@ -26,14 +26,14 @@ const Drinks = () => {
     const fetchIngredients = async () => {
         try {
             const response = await axios.get(`${API_URL}/get-all-ingredients`);
-            setIngredients(response.data.ingredients);
+            setIngredients(response.data.ingredients.drinks);
         } catch (error) {
             console.error('Error fetching drinks:', error);
         }
     };
 
     const createDrink = async () => {
-        const response = await axios.post(`${API_URL}/create-drink`, { name, ingredients, creator, image });
+        const response = await axios.post(`${API_URL}/create-drink`, { name, newIngredients, creator, image });
         const data = response.data;
         setMessage(data.message);
         fetchDrinks();
@@ -54,9 +54,30 @@ const Drinks = () => {
         }
     };
 
-    const addIngredient = async (ingredient) => {
-        setNewIngredients((prev) => prev.push(ingredient));
+    const addIngredient = (e) => {
+        e.preventDefault();
+
+        const ingredientToAdd = ingredients.find(ing => ing.strIngredient1 === selectedIngredient);
+
+        if (ingredientToAdd && !newIngredients.some(ing => ing.strIngredient1 === ingredientToAdd.strIngredient1)) {
+            const imageUrl = `https://www.thecocktaildb.com/images/ingredients/${ingredientToAdd.strIngredient1.toLowerCase().replace(' ', '_')}-Small.png`;
+
+            const ingredientWithImage = {
+                ...ingredientToAdd,
+                image: imageUrl
+            };
+
+            setNewIngredients(prev => [...prev, ingredientWithImage]);
+            setSelectedIngredient('');
+        }
     };
+
+    useEffect(() => {
+        if (isOpen) {
+            fetchIngredients();
+            setNewIngredients([]);
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         fetchDrinks();
@@ -79,26 +100,39 @@ const Drinks = () => {
                 <div className='fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50'>
                     <div className='shadow-custom rounded-xl py-16 px-9 bg-white'>
                         <h3 className='text-2xl font-bold mb-10'>Create your drink</h3>
-                        <form className='px-10 py-5'>
-                            <select name="ingredients" id="" className='my-10 rounded-lg px-5 py-3 border shadow-custom'>
-                                <option value="">Choose the ingredients</option>
-                                {ingredients.length > 0 && (
-                                    ingredients.map((ingredient, idx) => (
-                                        <option key={idx} value={ingredient.name} className='' onClick={addIngredient}>{ingredient.name}</option>
-                                    ))
-                                )}
-                            </select>
+                        <div className='px-10 py-5'>
+                            <form onSubmit={addIngredient}>
+                                <select
+                                    name="ingredients"
+                                    className="my-10 rounded-lg px-5 py-3 border shadow-custom"
+                                    value={selectedIngredient}
+                                    onChange={(e) => setSelectedIngredient(e.target.value)}
+                                >
+                                    <option value="">Choose the ingredients</option>
+                                    {ingredients.map((ingredient, idx) => (
+                                        <option key={idx} value={ingredient.strIngredient1}>
+                                            {ingredient.strIngredient1}
+                                        </option>
+                                    ))}
+                                </select>
+                                <button
+                                    type="submit"
+                                    className="ml-5 px-5 py-2 rounded-xl border shadow-custom duration-400 transition-all hover:-translate-y-3"
+                                >
+                                    Add
+                                </button>
+                            </form>
                             <div className='flex items-center justify-center gap-8'>
                                 <button className='px-5 py-2 rounded-xl border shadow-custom duration-400 transition-all hover:-translate-y-3' onClick={handleCreateDrink}>Confirm</button>
                                 <button className='px-5 py-2 rounded-xl border shadow-custom duration-400 transition-all hover:-translate-y-3' onClick={handleCreateDrink}>Exit</button>
                             </div>
-                        </form>
-                        <div className='newIngredients flex flex-col items-center justify-center'>
+                        </div>
+                        <div className='newIngredients grid grid-cols-3'>
                             {newIngredients.length > 0 && (
                                 newIngredients.map((ingredient, idx) => (
                                     <div key={idx} className='flex flex-col text-center'>
-                                        <h3 className='text-base font-semibold'>{ingredient.name}</h3>
-                                        <img src={ingredient.image} alt={ingredient.name} />
+                                        <h3 className='text-base font-semibold'>{ingredient.strIngredient1}</h3>
+                                        <img src={ingredient.image} alt={ingredient.strIngredient1} />
                                     </div>
                                 ))
                             )}

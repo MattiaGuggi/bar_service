@@ -13,7 +13,6 @@ const SearchBar = ({ setResult, mode }) => {
         try {
             const response = await axios.get(`${API_URL}/get-all-drinks`);
             setDrinks(response.data.drinks.drinks);
-            console.log(drinks);
         } catch (error) {
             console.error('Error fetching drinks:', error);
         }
@@ -22,8 +21,7 @@ const SearchBar = ({ setResult, mode }) => {
     const fetchIngredients = async () => {
         try {
             const response = await axios.get(`${API_URL}/get-all-ingredients`);
-            setDrinks(response.data.drinks);
-            console.log(drinks);
+            setDrinks(response.data.ingredients.drinks);
         } catch (error) {
             console.error('Error fetching drinks:', error);
         }
@@ -46,8 +44,10 @@ const SearchBar = ({ setResult, mode }) => {
         let result = [];
 
         drinks.forEach(drink => {
-            if (drink.strDrink.toLowerCase().startsWith(value.toLowerCase()))
+            if (drink?.strDrink?.toLowerCase().startsWith(value.toLowerCase()))
                 result.push(drink.strDrink);
+            else if (drink?.strIngredient1?.toLowerCase().startsWith(value.toLowerCase()))
+                result.push(drink.strIngredient1)
         });
         setResult(result.slice(0, 6));
     };

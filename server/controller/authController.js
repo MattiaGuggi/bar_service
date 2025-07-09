@@ -24,15 +24,42 @@ export const signup = async (req, res) => {
 
 export const getAllDrinks = async (req, res) => {
     try {
-        const response = await fetch('https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=Cocktail');
-        const drinks = await response.json();
+        const allDrinks = [];
+        const letters = 'abcdefghijklmnopqrstuvwxyz';
+
+        for (const letter of letters) {
+            const response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?f=${letter}`);
+
+            if (!response.ok) {
+                console.warn(`Request failed for letter ${letter} with status ${response.status}`);
+                continue;
+            }
+
+            const text = await response.text();
+
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (parseErr) {
+                console.warn(`Failed to parse JSON for letter ${letter}:`, text);
+                continue;
+            }
+
+            if (data.drinks) {
+                allDrinks.push(...data.drinks);
+            }
+
+            // Optional: Delay to avoid hammering API (5000ms pause)
+            await new Promise(resolve => setTimeout(resolve, 5000));
+        }
 
         res.json({
             success: true,
-            drinks: drinks
+            drinks: allDrinks
         });
-    } catch(err) {
-        console.error('Error searching up', err);
+    } catch (err) {
+        console.error('Error fetching all drinks', err);
+        res.status(500).json({ success: false, message: 'Failed to fetch drinks' });
     }
 };
 
@@ -54,11 +81,12 @@ export const getDrink = async (req, res) => {
 
 export const getAllIngredients = async (req, res) => {
     try {
-        const ingredients = [];
+        const ingredients = await fetch('https://www.thecocktaildb.com/api/json/v1/1/list.php?i=list');
+        const data = await ingredients.json();
 
         res.json({
             success: true,
-            ingredients: ingredients
+            ingredients: data
         });
     } catch(err) {
         console.error('Error getting all ingredients', err);
