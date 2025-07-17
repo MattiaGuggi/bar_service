@@ -48,9 +48,6 @@ export const getAllDrinks = async (req, res) => {
             if (data.drinks) {
                 allDrinks.push(...data.drinks);
             }
-
-            // Optional: Delay to avoid hammering API (5000ms pause)
-            await new Promise(resolve => setTimeout(resolve, 5000));
         }
 
         res.json({
@@ -67,12 +64,28 @@ export const getDrink = async (req, res) => {
     const { drink } = req.query;
 
     try {
-        const response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${drink.toLowerCase().replace(' ', '_')}`);
+        const response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${drink?.toLowerCase()?.replace(' ', '_')}`);
         const data = await response.json();
 
         res.json({
             success: true,
             drink: data
+        });
+    } catch(err) {
+        console.error('Error searching up', err);
+    }
+};
+
+export const getIngredient = async (req, res) => {
+    const { ingredient } = req.query;
+
+    try {
+        const response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${ingredient.toLowerCase().replace(' ', '_')}`);
+        const data = await response.json();
+
+        res.json({
+            success: true,
+            ingredient: data
         });
     } catch(err) {
         console.error('Error searching up', err);

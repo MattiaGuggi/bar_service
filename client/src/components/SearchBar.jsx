@@ -12,7 +12,7 @@ const SearchBar = ({ setResult, mode }) => {
     const fetchDrinks = async () => {
         try {
             const response = await axios.get(`${API_URL}/get-all-drinks`);
-            setDrinks(response.data.drinks.drinks);
+            setDrinks(response.data.drinks);
         } catch (error) {
             console.error('Error fetching drinks:', error);
         }
@@ -26,19 +26,6 @@ const SearchBar = ({ setResult, mode }) => {
             console.error('Error fetching drinks:', error);
         }
     };
-
-    useEffect(() => { 
-        switch(mode) {
-            case 'drinks':
-                fetchDrinks();
-                break;
-            case 'ingredients':
-                fetchIngredients();
-                break;
-            default:
-                break;
-        }       
-    }, []);
 
     const drinkData = (value) => {
         let result = [];
@@ -60,6 +47,19 @@ const SearchBar = ({ setResult, mode }) => {
         }
         drinkData(value);
     }
+
+    useEffect(() => { 
+        switch(mode) {
+            case 'drinks':
+                fetchDrinks();
+                break;
+            case 'ingredients':
+                fetchIngredients();
+                break;
+            default:
+                break;
+        }       
+    }, []);
 
     return (
         <div className='bg-[#2f3134] rounded-lg h-auto w-auto shadow-custom flex items-center xs:h-14'>

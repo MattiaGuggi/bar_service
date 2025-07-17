@@ -3,22 +3,34 @@ import axios from 'axios';
 import { useState } from 'react';
 
 const SearchResults = ({ results, mode }) => {
-    const [drink, setDrink] = useState({});
+    const [research, setResearch] = useState({});
     const API_URL = import.meta.env.MODE === "development" ? "http://localhost:8080" : "";
 
     const fetchDrink = async (value) => {
         try {
             const response = await axios.get(`${API_URL}/get-drink`, { params: { drink: value } });
 
-            setDrink(response.data.drink[0]);
-            console.log(response.data.drink);
+            setResearch(response.data.drink.drinks[0]);
+            console.log(response.data.drink.drinks[0]);
         } catch(err) {
-            console.error('Error fetching all drinks', err);
+            console.error('Error fetching drinks', err);
+        }
+    };
+
+    const fetchIngredients = async (value) => {
+        try {
+            const response = await axios.get(`${API_URL}/get-ingredient`, { params: { ingredient: value } });
+
+            setResearch(response.data.ingredient.drinks[0]);
+            console.log(response.data.ingredient.drinks[0]);
+        } catch(err) {
+            console.error('Error fetching ingredient', err);
         }
     };
 
     const handleResultClick = (value) => {
-        fetchDrink(value);
+        if(mode == 'drinks') fetchDrink(value);
+        if(mode == 'ingredients') fetchIngredients(value);
     };
 
     return (

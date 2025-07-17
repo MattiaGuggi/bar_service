@@ -5,6 +5,8 @@ import Search from '../components/Search'
 
 const Drinks = () => {
     const [drinks, setDrinks] = useState(null);
+    const [drinkName, setDrinkName] = useState('');
+    const [drinkImg, setDrinkImg] = useState('');
     const [confirmation, setConfirmation] = useState(null);
     const [message, setMessage] = useState('');
     const [selectedIngredient, setSelectedIngredient] = useState('');
@@ -17,7 +19,7 @@ const Drinks = () => {
         try {
             const response = await axios.get(`${API_URL}/get-all-drinks`);
 
-            setDrinks(response.data.drinks.drinks);
+            setDrinks(response.data.drinks);
         } catch(err) {
             console.error('Error fetching all drinks', err);
         }
@@ -33,7 +35,7 @@ const Drinks = () => {
     };
 
     const createDrink = async () => {
-        const response = await axios.post(`${API_URL}/create-drink`, { name, newIngredients, creator, image });
+        const response = await axios.post(`${API_URL}/create-drink`, { name: drinkName, newIngredients, creator: 'panda', image: drinkImg });
         const data = response.data;
         setMessage(data.message);
         fetchDrinks();
@@ -45,9 +47,11 @@ const Drinks = () => {
         switch(e.target.innerText) {
             case 'Confirm':
                 createDrink();
+                setDrinkName('');
                 break;
             case 'Exit':
                 setConfirmation(false);
+                setDrinkName('');
                 break;
             default:
                 break;
@@ -101,7 +105,21 @@ const Drinks = () => {
                     <div className='shadow-custom rounded-xl py-16 px-9 bg-white'>
                         <h3 className='text-2xl font-bold mb-10'>Create your drink</h3>
                         <div className='px-10 py-5'>
-                            <form onSubmit={addIngredient}>
+                            <form onSubmit={addIngredient} className='flex flex-col'>
+                                <input type="text" placeholder='Drink name' value={drinkName} onChange={(e) => setDrinkName(e.target.value)} className='shadow-custom px-6 py-3 rounded-lg' />
+                                <input type="file" accept='image/' className='rounded-xl shadow-custom'
+                                    onChange={e => {
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            const reader = new FileReader();
+                                            reader.onloadend = () => {
+                                                setDrinkImg(reader.result);
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                />
+                                <img src={drinkImg} alt={drinkName} className='shadow-custom rounded-2xl h-20 w-20' />
                                 <select
                                     name="ingredients"
                                     className="my-10 rounded-lg px-5 py-3 border shadow-custom"
