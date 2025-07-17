@@ -8,6 +8,10 @@ module.exports = {
     extend: {
       boxShadow: {
         'custom': '0 0 8px rgba(0, 0, 0, 0.2)',
+        'glass': '0 4px 30px rgba(0, 0, 0, 0.1)',
+      },
+      backdropBlur: {
+        xs: '2px',
       },
       screens: {
         xs: { min: '320px', max: '480px' },

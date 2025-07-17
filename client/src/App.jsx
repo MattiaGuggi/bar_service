@@ -8,13 +8,12 @@ import Navbar from './components/Navbar';
 import Animation from './components/Animation';
 
 function App() {
-
   return (
     <Router>
       <Navbar />
       <Animation left={''} right={''} top={''} bottom={''} />
-      <div className='relative w-full min-h-screen pt-16 text-center flex justify-center items-center flex-col
-        overflow-hidden bg-gradient-to-br from-sky-600 via-blue-700 to-rose-700'>
+      <div className="relative w-full min-h-screen pt-20 px-4 sm:px-8 text-center flex justify-center items-center flex-col
+        overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-800 text-white transition-colors duration-500">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
