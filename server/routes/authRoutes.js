@@ -1,5 +1,5 @@
 import express from 'express'
-import { login, signup, getAllDrinks, getAllIngredients, getDrink, getIngredient } from '../controller/authController.js'
+import { login, signup, getAllDrinks, getAllIngredients, getDrink, getIngredient, updateUser } from '../controller/authController.js'
 
 const authRoutes = () => {
     const router = express.Router();
@@ -12,6 +12,7 @@ const authRoutes = () => {
     router.post('/login', (req, res) => login(req, res));
     router.post('/signup', (req, res) => signup(req, res));
     router.post('/create-drink', (req, res) => createDrink(req, res));
+    router.post('/update-user', (req, res) => updateUser(req, res));
 
     return router;
 };

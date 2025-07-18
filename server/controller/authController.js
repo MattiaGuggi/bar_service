@@ -1,4 +1,4 @@
-import { createUser, findUser, createDrinkInDb } from '../db/database.js';
+import { createUser, findUser, createDrinkInDb, updateUserInDb } from '../db/database.js';
 
 export const login = async (req, res) => {
     const { email, password } = req.body;
@@ -137,5 +137,23 @@ export const createDrink = async (req, res) => {
         });
     } catch(err) {
         console.error('Error creating drink', err);
+    }
+};
+
+export const updateUser = async (req, res) => {
+    const { user } = req.body;
+    try {
+        await updateUserInDb(user);
+
+        res.json({
+            success: true,
+            message: 'Updated user successfully'
+        });
+    } catch(err) {
+        console.error('Error updating user', err);
+        res.json({
+            success: false,
+            message: 'Error updating user'
+        });
     }
 };

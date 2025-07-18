@@ -61,3 +61,7 @@ export const createDrinkInDb = async (newDrink) => {
     const drink = new Drink(newDrink);
     await drink.save();
 };
+
+export const updateUserInDb = async (user) => {
+    await User.findByIdAndUpdate(user._id, { $set: user }, { new: true }); // Update the user and return the updated document
+};
