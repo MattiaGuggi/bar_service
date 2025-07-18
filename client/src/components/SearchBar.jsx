@@ -1,17 +1,19 @@
 import { Search as SearchIcon } from 'lucide-react';
-import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-const SearchBar = ({ setResult, mode, data }) => {
+const SearchBar = ({ mode, data, setData, originalData }) => {
   const [input, setInput] = useState('');
 
   const handleChange = (value) => {
     setInput(value);
-    if (!value) return setResult([]);
-    const result = data.filter((item) =>
-      (item.strDrink || item.strIngredient1)?.toLowerCase().startsWith(value.toLowerCase())
-    ).map((item) => item.strDrink || item.strIngredient1);
-    setResult(result.slice(0, 6));
+    if (!value) {
+      setData(originalData);
+      return;
+    }
+
+    const result = data.filter((item) => (item.strDrink || item.strIngredient1)?.toLowerCase().startsWith(value.toLowerCase()));
+
+    setData(result.slice(0, 6));
   };
 
   return (

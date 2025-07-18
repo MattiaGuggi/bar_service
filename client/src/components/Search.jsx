@@ -1,14 +1,10 @@
-import { useState } from 'react';
 import SearchBar from './SearchBar';
-import SearchResults from './SearchResults';
 
-const Search = ({ className = '', mode = 'drinks', data }) => {
-  const [result, setResult] = useState([]);
+const Search = ({ className = '', mode = 'drinks', data, setData, originalData }) => {
 
   return (
     <div className={`w-full max-w-xs ${className}`}>
-      <SearchBar setResult={setResult} mode={mode} data={data} />
-      <SearchResults results={result} mode={mode} />
+      <SearchBar mode={mode} data={data} setData={setData} originalData={originalData} />
     </div>
   );
 };

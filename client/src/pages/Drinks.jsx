@@ -6,15 +6,15 @@ import { useUser } from '../components/UserContext';
 import Loader from '../components/Loader';
 
 const Drinks = () => {
+  const [ingredients, setIngredients] = useState([]);
   const [drinks, setDrinks] = useState(null);
-  const [drinkName, setDrinkName] = useState('');
-  const [drinkImg, setDrinkImg] = useState('');
-  const [message, setMessage] = useState('');
+  const [allDrinks, setAllDrinks] = useState(null);
+  const [drink, setDrink] = useState({ name: '', image: '', ingredients: [] });
   const [selectedIngredient, setSelectedIngredient] = useState('');
+
+  const [message, setMessage] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const [ingredients, setIngredients] = useState([]);
-  const [newIngredients, setNewIngredients] = useState([]);
   const { user } = useUser();
   const API_URL = import.meta.env.MODE === "development" ? "http://localhost:8080" : "";
 
@@ -24,6 +24,7 @@ const Drinks = () => {
         credentials: "include"
       });
       setDrinks(response.data.drinks);
+      setAllDrinks(response.data.drinks);
       console.log(response.data.drinks);
     } catch (err) {
       console.error('Error fetching drinks', err);
@@ -44,10 +45,10 @@ const Drinks = () => {
 
   const createDrink = async () => {
     const response = await axios.post(`${API_URL}/create-drink`, {
-      name: drinkName,
-      ingredients: newIngredients,
+      name: drink.name,
+      ingredients: drink.ingredients,
       creator: user._id,
-      image: drinkImg
+      image: drink.image
     });
     setMessage(response.data.message);
     fetchDrinks();
@@ -58,21 +59,21 @@ const Drinks = () => {
     const text = e.target.innerText;
     if (text === 'Confirm') {
       createDrink();
-      setDrinkName('');
+      setDrink({ name: '', image: '', ingredient: [] });
       setIsOpen(false);
     }
     if (text === 'Exit') {
       setIsOpen(false);
-      setDrinkName('');
+      setDrink({ name: '', image: '', ingredient: [] });
     }
   };
 
   const addIngredient = (e) => {
     e.preventDefault();
     const ingredientToAdd = ingredients.find(ing => ing.strIngredient1 === selectedIngredient);
-    if (ingredientToAdd && !newIngredients.some(ing => ing.strIngredient1 === selectedIngredient)) {
+    if (ingredientToAdd && !drink.ingredients.some(ing => ing.strIngredient1 === selectedIngredient)) {
       const imageUrl = `https://www.thecocktaildb.com/images/ingredients/${selectedIngredient.toLowerCase().replace(' ', '_')}-Small.png`;
-      setNewIngredients(prev => [...prev, { ...ingredientToAdd, image: imageUrl }]);
+      setDrink(prev => ({ ...prev, ingredients: [...prev.ingredients, { ...ingredientToAdd, image: imageUrl }] }));
       setSelectedIngredient('');
     }
   };
@@ -90,7 +91,7 @@ const Drinks = () => {
   useEffect(() => {
     if (isOpen) {
       fetchIngredients();
-      setNewIngredients([]);
+      setDrink(prev => ({ ...prev, ingredients: [] }));
     }
   }, [isOpen]);
 
@@ -99,8 +100,8 @@ const Drinks = () => {
   return (
     <div className="flex flex-col items-center justify-center mt-20">
         <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 mb-10">
-            {drinks && (<Search mode="drinks" data={drinks} />)}
-            {ingredients && (<Search mode="ingredients" data={ingredients} />)}
+            {drinks && (<Search mode="drinks" data={drinks} setData={setDrinks} originalData={allDrinks} />)}
+            {ingredients && (<Search mode="ingredients" data={ingredients} setData={setIngredients} />)}
             <button
                 className="rounded-full px-6 py-2 bg-white/10 text-white border border-white/30 backdrop-blur-md hover:bg-white/20 transition-all"
                 onClick={handleCreateDrink}
@@ -117,8 +118,8 @@ const Drinks = () => {
                         <input
                             type="text"
                             placeholder="Drink name"
-                            value={drinkName}
-                            onChange={(e) => setDrinkName(e.target.value)}
+                            value={drink.name}
+                            onChange={(e) => setDrink(prev => ({ ...prev, name: e.target.value }))}
                             className="bg-white/10 px-4 py-3 rounded-lg text-white placeholder-white/60 focus:outline-none"
                         />
                         <input
@@ -129,13 +130,13 @@ const Drinks = () => {
                             const file = e.target.files[0];
                             if (file) {
                                 const reader = new FileReader();
-                                reader.onloadend = () => setDrinkImg(reader.result);
+                                reader.onloadend = () => setDrink(prev => ({ ...prev, image: reader.result }));
                                 reader.readAsDataURL(file);
                             }
                             }}
                         />
-                        {drinkImg && (
-                            <img src={drinkImg} alt={drinkName} className="h-20 w-20 object-cover rounded-lg" />
+                        {drink.image && (
+                            <img src={drink.image} alt={drink.name} className="h-20 w-20 object-cover rounded-lg" />
                         )}
                         <select
                             value={selectedIngredient}
@@ -155,10 +156,10 @@ const Drinks = () => {
                     </form>
 
                     <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    {newIngredients.map((ing, idx) => (
+                    {drink.ingredients.map((ing, idx) => (
                         <div key={idx} className="flex flex-col items-center">
-                        <img src={ing.image} alt={ing.strIngredient1} className="h-12 w-12 rounded-full" />
-                        <p className="text-sm mt-2">{ing.strIngredient1}</p>
+                          <img src={ing.image} alt={ing.strIngredient1} className="h-12 w-12 rounded-full" />
+                          <p className="text-sm mt-2">{ing.strIngredient1}</p>
                         </div>
                     ))}
                     </div>
