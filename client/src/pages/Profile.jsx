@@ -51,13 +51,13 @@ const Profile = () => {
         <Toast type='error' message={error} onClose={setIsOpen(false)} />
       )}
       {isOpen ? (
-        <form onSubmit={(e) => handleSubmit(e)} className='flex flex-col rounded-xl gap-10 my-14 shadow-custom bg-gradient-to-br from-indigo-700 via-violet-500 to-indigo-600 px-15 py-10'>
+        <form onSubmit={(e) => handleSubmit(e)} className='flex flex-col rounded-xl gap-10 my-14 shadow-custom bg-white/10 px-15 py-10'>
           <input type="text" value={user?.username} onChange={(e) => setUser((prev) => ({ ...prev, username: e.target.value }))} className='mx-10 px-8 py-4 rounded-lg text-black' placeholder='Username' />
           <input type="email" value={user?.email} onChange={(e) => setUser((prev) => ({ ...prev, email: e.target.value }))} className='mx-10 px-8 py-4 rounded-lg text-black' placeholder='Email' />
           <input type="password" value={user?.password} onChange={(e) => setUser((prev) => ({ ...prev, password: e.target.value }))} className='mx-10 px-8 py-4 rounded-lg text-black' placeholder='Password' />
           <div className='flex w-full items-center justify-center gap-10'>
-            <input type="submit" onClick={(e) => handleSubmit(e)} className='bg-white/10 hover:bg-white/20 transition-all duration-400 rounded-lg py-4 px-8 cursor-pointer font-semibold' value='Save' />
-            <input type="submit" onClick={(e) => handleSubmit(e)} className='bg-white/10 hover:bg-white/20 transition-all duration-400 rounded-lg py-4 px-8 cursor-pointer font-semibold' value='Cancel' />
+            <input type="submit" onClick={(e) => handleSubmit(e)} className='bg-white/30 shadow-lg text-white hover:bg-white/20 transition-all duration-400 rounded-lg py-4 px-8 cursor-pointer font-semibold' value='Save' />
+            <input type="submit" onClick={(e) => handleSubmit(e)} className='bg-white shadow-lg text-white/30 border hover:bg-clip-text hover:bg-white transition-all duration-400 rounded-lg py-4 px-8 cursor-pointer font-semibold' value='Cancel' />
           </div>
         </form>
       ) : (

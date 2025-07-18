@@ -157,3 +157,24 @@ export const updateUser = async (req, res) => {
         });
     }
 };
+
+export const getDrinkDetails = async (req, res) => {
+    const { id } = req.query;
+
+    try {
+        const response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${id}`);
+        const data = await response.json();
+
+        res.json({
+            success: true,
+            message: 'Drink retrieved successfully',
+            drink: data.drinks
+        });
+    } catch(err) {
+        console.error('Error getting drink details', err);
+        res.json({
+            success: false,
+            message: 'Error retrieving drink',
+        });
+    }
+};

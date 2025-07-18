@@ -7,8 +7,9 @@ import Loader from '../components/Loader';
 
 const Drinks = () => {
   const [ingredients, setIngredients] = useState([]);
-  const [drinks, setDrinks] = useState(null);
   const [allDrinks, setAllDrinks] = useState(null);
+  
+  const [drinks, setDrinks] = useState(null);
   const [drink, setDrink] = useState({ name: '', image: '', ingredients: [] });
   const [selectedIngredient, setSelectedIngredient] = useState('');
 
@@ -81,7 +82,7 @@ const Drinks = () => {
   const loadPage = async () => {
     await fetchDrinks();
     await fetchIngredients();
-    setIsMounted(true)
+    setIsMounted(true);
   };
 
   useEffect(() => {

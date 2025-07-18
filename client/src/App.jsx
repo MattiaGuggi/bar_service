@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import { useState } from 'react';
 import { UserProvider } from './components/UserContext';
+import DrinkPage from './pages/DrinkPage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -32,6 +33,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/drinks" element={<Drinks />} />
+              <Route path="/drinks/:id" element={<DrinkPage />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<Home />} />
             </Routes>

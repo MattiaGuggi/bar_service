@@ -11,7 +11,7 @@ const SearchBar = ({ mode, data, setData, originalData }) => {
       return;
     }
 
-    const result = data.filter((item) => (item.strDrink || item.strIngredient1)?.toLowerCase().startsWith(value.toLowerCase()));
+    const result = originalData.filter((item) => (item.strDrink || item.strIngredient1)?.toLowerCase().startsWith(value.toLowerCase()));
 
     setData(result.slice(0, 6));
   };
