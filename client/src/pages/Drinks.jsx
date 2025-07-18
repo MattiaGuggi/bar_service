@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import Drink from '../components/Drink'
 import Search from '../components/Search'
+import { useUser } from '../components/UserContext';
 
 const Drinks = () => {
   const [drinks, setDrinks] = useState(null);
@@ -12,6 +13,7 @@ const Drinks = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [ingredients, setIngredients] = useState([]);
   const [newIngredients, setNewIngredients] = useState([]);
+  const { user } = useUser();
   const API_URL = import.meta.env.MODE === "development" ? "http://localhost:8080" : "";
 
   const fetchDrinks = async () => {
@@ -41,8 +43,8 @@ const Drinks = () => {
   const createDrink = async () => {
     const response = await axios.post(`${API_URL}/create-drink`, {
       name: drinkName,
-      newIngredients,
-      creator: 'panda',
+      ingredients: newIngredients,
+      creator: user._id,
       image: drinkImg
     });
     setMessage(response.data.message);

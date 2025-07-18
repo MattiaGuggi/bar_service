@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import axios from 'axios'
+import { useUser } from '../components/UserContext';
 
 const Login = ({ setIsAuthenticated }) => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const { setUser } = useUser();
   const API_URL = import.meta.env.MODE === "development" ? "http://localhost:8080" : "";
 
   const handleChange = (e) => {
@@ -16,7 +18,10 @@ const Login = ({ setIsAuthenticated }) => {
     try {
       const response = await axios.post(`${API_URL}/login`, formData);
       const data = response.data;
-      if (data.success) setIsAuthenticated(true);
+      if (data.success) {
+        setUser(data.user);
+        setIsAuthenticated(true);
+      }
     } catch (err) {
       setError('Login failed. Please try again.');
     }
