@@ -35,15 +35,7 @@ export const getAllDrinks = async (req, res) => {
                 continue;
             }
 
-            const text = await response.text();
-
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch (parseErr) {
-                console.warn(`Failed to parse JSON for letter ${letter}:`, text);
-                continue;
-            }
+            const data = await response.json();
 
             if (data.drinks) {
                 allDrinks.push(...data.drinks);
@@ -94,15 +86,22 @@ export const getIngredient = async (req, res) => {
 
 export const getAllIngredients = async (req, res) => {
     try {
-        const ingredients = await fetch('https://www.thecocktaildb.com/api/json/v1/1/list.php?i=list');
-        const data = await ingredients.json();
+        const response = await fetch('https://www.thecocktaildb.com/api/json/v1/1/list.php?i=list');
 
+        // Ensure the response is OK
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
         res.json({
             success: true,
-            ingredients: data
+            ingredients: data.drinks
         });
-    } catch(err) {
-        console.error('Error getting all ingredients', err);
+    } catch (err) {
+        console.error('Error getting all ingredients', err.message);
+        res.status(500).json({ success: false, error: 'Failed to fetch ingredients' });
     }
 };
 

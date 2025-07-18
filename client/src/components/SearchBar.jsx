@@ -2,24 +2,13 @@ import { Search as SearchIcon } from 'lucide-react';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
-const SearchBar = ({ setResult, mode }) => {
+const SearchBar = ({ setResult, mode, data }) => {
   const [input, setInput] = useState('');
-  const [drinks, setDrinks] = useState([]);
-  const API_URL = import.meta.env.MODE === "development" ? "http://localhost:8080" : "";
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const url = mode === 'drinks' ? '/get-all-drinks' : '/get-all-ingredients';
-      const res = await axios.get(`${API_URL}${url}`);
-      setDrinks(mode === 'drinks' ? res.data.drinks : res.data.ingredients.drinks);
-    };
-    fetchData();
-  }, []);
 
   const handleChange = (value) => {
     setInput(value);
     if (!value) return setResult([]);
-    const result = drinks.filter((item) =>
+    const result = data.filter((item) =>
       (item.strDrink || item.strIngredient1)?.toLowerCase().startsWith(value.toLowerCase())
     ).map((item) => item.strDrink || item.strIngredient1);
     setResult(result.slice(0, 6));

@@ -6,12 +6,13 @@ import http from 'http';
 import authRoutes from './routes/authRoutes.js';
 
 dotenv.config();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 const CLIENT_URL = process.env.CLIENT_URL;
 const __dirname = path.resolve();
 const app = express();
 const server = http.createServer(app);
 
+console.log("CORS allowed origin:", CLIENT_URL);
 const corsOptions = {
     origin: CLIENT_URL,
     credentials: true,
@@ -22,6 +23,7 @@ const corsOptions = {
 // Middleware
 app.use(express.json());
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // handle preflight
 
 // Routes
 app.use('/', authRoutes());

@@ -16,8 +16,11 @@ const Drinks = () => {
 
   const fetchDrinks = async () => {
     try {
-      const response = await axios.get(`${API_URL}/get-all-drinks`);
+      const response = await axios.get(`${API_URL}/get-all-drinks`, {
+        credentials: "include"
+      });
       setDrinks(response.data.drinks);
+      console.log(response.data.drinks);
     } catch (err) {
       console.error('Error fetching drinks', err);
     }
@@ -25,10 +28,13 @@ const Drinks = () => {
 
   const fetchIngredients = async () => {
     try {
-      const response = await axios.get(`${API_URL}/get-all-ingredients`);
-      setIngredients(response.data.ingredients.drinks);
+      const response = await axios.get(`${API_URL}/get-all-ingredients`, {
+        credentials: "include"
+      });
+      setIngredients(response.data.ingredients);
+      console.log(response.data.ingredients);
     } catch (error) {
-      console.error('Error fetching drinks:', error);
+      console.error('Error fetching ingredients:', error);
     }
   };
 
@@ -82,8 +88,8 @@ const Drinks = () => {
   return (
     <div className="flex flex-col items-center justify-center mt-20">
         <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 mb-10">
-            <Search mode="drinks" />
-            <Search mode="ingredients" />
+            {drinks && (<Search mode="drinks" data={drinks} />)}
+            {ingredients && (<Search mode="ingredients" data={ingredients} />)}
             <button
                 className="rounded-full px-6 py-2 bg-white/10 text-white border border-white/30 backdrop-blur-md hover:bg-white/20 transition-all"
                 onClick={handleCreateDrink}
