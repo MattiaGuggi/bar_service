@@ -3,6 +3,7 @@ import axios from 'axios'
 import Drink from '../components/Drink'
 import Search from '../components/Search'
 import { useUser } from '../components/UserContext';
+import Loader from '../components/Loader';
 
 const Drinks = () => {
   const [drinks, setDrinks] = useState(null);
@@ -11,6 +12,7 @@ const Drinks = () => {
   const [message, setMessage] = useState('');
   const [selectedIngredient, setSelectedIngredient] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const [ingredients, setIngredients] = useState([]);
   const [newIngredients, setNewIngredients] = useState([]);
   const { user } = useUser();
@@ -75,9 +77,14 @@ const Drinks = () => {
     }
   };
 
+  const loadPage = async () => {
+    await fetchDrinks();
+    await fetchIngredients();
+    setIsMounted(true)
+  };
+
   useEffect(() => {
-    fetchDrinks();
-    fetchIngredients();
+    loadPage();
   }, []);
 
   useEffect(() => {
@@ -86,6 +93,8 @@ const Drinks = () => {
       setNewIngredients([]);
     }
   }, [isOpen]);
+
+  if (!isMounted) return <Loader />
 
   return (
     <div className="flex flex-col items-center justify-center mt-20">
