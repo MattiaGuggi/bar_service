@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import http from 'http';
 import authRoutes from './routes/authRoutes.js';
+import { connectDB } from './db/database.js';
 
 dotenv.config();
 const PORT = process.env.PORT || 8080;
@@ -12,7 +13,6 @@ const __dirname = path.resolve();
 const app = express();
 const server = http.createServer(app);
 
-console.log("CORS allowed origin:", CLIENT_URL);
 const corsOptions = {
     origin: CLIENT_URL,
     credentials: true,
@@ -38,5 +38,6 @@ if (process.env.NODE_ENV === "production") {
 
 // Start server
 server.listen(PORT, () => {
+    connectDB();
     console.log(`Server started on port ${PORT}`);
 });

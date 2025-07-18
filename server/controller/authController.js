@@ -1,24 +1,42 @@
-import { Drink } from '../models/drink.model.js'
+import { createUser, findUser, createDrinkInDb } from '../db/database.js';
 
 export const login = async (req, res) => {
+    const { email, password } = req.body;
+
     try {
+        const user = await findUser({ email, password });
+
+        if (!user) return res.json({ success: false, message: 'User does not exist' });
+
         res.json({
             success: true,
             message: 'Logged in successfully!'
         });
     } catch(err) {
         console.error('Error loggin in', err);
+        res.json({
+            success: false,
+            message: 'Failed to login'
+        });
     }
 };
 
 export const signup = async (req, res) => {
+    const { username, email, password } = req.body;
+
     try {
+        await createUser({ username, email, password });
+
         res.json({
             success: true,
             message: 'Signed up in successfully!'
         });
     } catch(err) {
         console.error('Error signing up', err);
+        res.json({
+            success: true,
+            message: 'Failed to signup'
+        });
     }
 };
 
@@ -109,7 +127,8 @@ export const createDrink = async (req, res) => {
     const { name, ingredients, creator, image } = req.body;
 
     try {
-        const drink = new Drink(name, ingredients, creator, image);
+
+        await createDrinkInDb({ name, ingredients, creator, image });
 
         res.json({
             success: true,

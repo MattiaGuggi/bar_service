@@ -3,9 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const navOptions = [
   { label: 'Home', path: '' },
-  { label: 'Login', path: 'login' },
-  { label: 'Signup', path: 'signup' },
-  { label: 'Drinks', path: 'drinks' }
+  { label: 'Drinks', path: 'drinks' },
+  { label: 'Profile', path: 'profile' },
 ];
 
 const Navbar = () => {
