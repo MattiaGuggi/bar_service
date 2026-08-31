@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '../../../lib/db';
-import { Drink } from '../../../lib/models';
+import { Drink } from '../../../lib/schema';
 
 export async function GET() {
     try {

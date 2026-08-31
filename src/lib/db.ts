@@ -1,46 +1,23 @@
-import mongoose from 'mongoose';
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
+import * as schema from "./schema";
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const DATABASE_URL = process.env.DATABASE_URL;
 
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+if (!DATABASE_URL) {
+  throw new Error("Please define the DATABASE_URL environment variable inside .env.local");
 }
 
-interface MongooseCache {
-  conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
-}
+const sql = neon(DATABASE_URL);
+export const db = drizzle(sql, { schema });
 
-declare global {
-  var mongooseCache: MongooseCache | undefined;
-}
-
-let cached = global.mongooseCache;
-
-if (!cached) {
-  cached = global.mongooseCache = { conn: null, promise: null };
-}
-
+/**
+ * Neon HTTP connection is stateless and lightweight.
+ * This helper maintains compatibility with your old connectDB call pattern.
+ */
 export async function connectDB() {
-  // Re-assert for TypeScript within function scope
-  if (!cached) {
-    cached = global.mongooseCache = { conn: null, promise: null };
+  if (!process.env.DATABASE_URL) {
+    throw new Error("Please define the DATABASE_URL environment variable inside .env.local");
   }
-
-  if (cached.conn) {
-    return cached.conn;
-  }
-
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI!).then((m) => m);
-  }
-
-  try {
-    cached.conn = await cached.promise;
-  } catch (e) {
-    cached.promise = null;
-    throw e;
-  }
-
-  return cached.conn;
+  return db;
 }

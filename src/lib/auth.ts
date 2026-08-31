@@ -1,80 +1,82 @@
-import mongoose from "mongoose";
-import { User, Drink } from './models';
-import { userType } from "./types";
-import dotenv from 'dotenv';
-
-dotenv.config();
+import { db, connectDB } from "./db";
+import { users, drinks, UserSelect, UserInsert, DrinkInsert } from "./schema";
+import { eq } from "drizzle-orm";
 
 /**
- * Connects to MongoDB
- */
-export const connectDB = async () => {
-    try {
-        if (!process.env.MONGODB_URI) {
-            throw new Error('Please add MONGODB_URI to your environment variables.');
-        }
-
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log("MongoDB connected");
-    } catch (error) {
-        console.error("MongoDB connection error:", error);
-        process.exit(1); // Exit the process with failure (0 successfull, 1 failure)
-    }
-};
-/**
- * Helper function to get every user from MongoDB
- * @returns {User} User - Every user in the DB
+ * Helper function to get every user from PostgreSQL
+ * @returns {Promise<UserSelect[]>} List of all users
  */
 export const getUsersFromDB = async () => {
-    await connectDB();
-    return await User.find({});
-}
+  await connectDB();
+  return await db.select().from(users);
+};
+
 /**
  * Creates user in DB
  *
- * @param {newUser} newUser - User to create in DB
-*/
-export const createUser = async (newUser: userType) => {
-    await connectDB();
-    const user = new User(newUser);
-    await user.save();
+ * @param {UserInsert} newUser - User data to insert
+ */
+export const createUser = async (newUser: UserInsert) => {
+  await connectDB();
+  const [createdUser] = await db.insert(users).values(newUser).returning();
+  return createdUser;
 };
+
 /**
  * Finds user in DB based on email
  *
- * @param {criteria} criteria - The criteria(email)
- * @returns {User} User - A user saved in the DB
+ * @param {string} email - Email address to search
+ * @returns {Promise<UserSelect | null>} User object or null
  */
 export const findUser = async (email: string) => {
-    await connectDB();
-    return await User.findOne({ email }); // Ensure you're passing the correct criteria
+  await connectDB();
+  const result = await db.select().from(users).where(eq(users.email, email));
+  return result[0] || null;
 };
+
 /**
  * Updates an existing user
  *
- * @param {user} user - the user you need to update
- * @returns {void}
+ * @param {Partial<UserSelect> & { id: string }} user - The user record to update (must include id)
  */
-export const updateUser = async (user: userType) => {
-    await connectDB();
-    try  {
-        await User.findByIdAndUpdate(user._id, { $set: user }, { new: true }); // Update the user and return the updated document
-    } catch (err) {
-        console.error('Error updating points', err);
-    }
+export const updateUser = async (user: Partial<UserSelect> & { id: string }) => {
+  await connectDB();
+  try {
+    const { id, ...updateData } = user;
+    const [updated] = await db
+      .update(users)
+      .set(updateData)
+      .where(eq(users.id, id))
+      .returning();
+    return updated;
+  } catch (err) {
+    console.error("Error updating user", err);
+  }
 };
+
 /**
  * Creates drink in DB
  *
- * @param {newDrink} newDrink - Drink to create in DB
-*/
-export const createDrinkInDb = async (newDrink: any) => {
-    await connectDB();
-    const drink = new Drink(newDrink);
-    await drink.save();
+ * @param {DrinkInsert} newDrink - Drink data to insert
+ */
+export const createDrinkInDb = async (newDrink: DrinkInsert) => {
+  await connectDB();
+  const [createdDrink] = await db.insert(drinks).values(newDrink).returning();
+  return createdDrink;
 };
 
-export const updateUserInDb = async (user: userType) => {
-    await connectDB();
-    await User.findByIdAndUpdate(user._id, { $set: user }, { new: true }); // Update the user and return the updated document
+/**
+ * Updates an existing user record in DB
+ *
+ * @param {Partial<UserSelect> & { id: string }} user - The user object containing an id
+ */
+export const updateUserInDb = async (user: Partial<UserSelect> & { id: string }) => {
+  await connectDB();
+  const { id, ...updateData } = user;
+  const [updated] = await db
+    .update(users)
+    .set(updateData)
+    .where(eq(users.id, id))
+    .returning();
+  return updated;
 };
