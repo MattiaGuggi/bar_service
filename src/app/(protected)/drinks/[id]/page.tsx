@@ -3,10 +3,10 @@ import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import Loader from '../../../../components/Loader'
-import { ArrowLeft, Sparkles, GlassWater } from 'lucide-react'
+import { ArrowLeft, Sparkles } from 'lucide-react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
-import { drinkType } from '@/src/lib/types'
+import { drinkType } from '@/lib/types'
 
 const Page = () => {
   const { id } = useParams()

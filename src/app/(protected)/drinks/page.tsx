@@ -1,11 +1,11 @@
 'use client'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import Drink from '../../../components/Drink'
-import Search from '../../../components/Search'
-import { useUser } from '../../../context/UserContext'
-import Loader from '../../../components/Loader'
-import { drinkType, ingredientType } from '@/src/lib/types'
+import Drink from '@/components/Drink'
+import Search from '@/components/Search'
+import { useUser } from '@/context/UserContext'
+import Loader from '@/components/Loader'
+import { drinkType, ingredientType } from '@/lib/types'
 import { Plus, X, Upload, Check, GlassWater } from 'lucide-react'
 
 const Page = () => {

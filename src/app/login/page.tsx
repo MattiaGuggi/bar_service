@@ -1,47 +1,45 @@
 'use client'
+
 import { useState } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
-import { useUser } from '@/src/context/UserContext'
-import { userType } from '@/src/lib/types'
+import { useUser } from '@/context/UserContext'
+import { userType } from '@/lib/types'
 import { Mail, Lock, ArrowRight, AlertCircle, GlassWater } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import Cookies from 'js-cookie'
 
 const Page = () => {
   const router = useRouter()
   const [formData, setFormData] = useState<userType>({ email: '', password: '' })
   const [error, setError] = useState<string>('')
-  const { setUser, setIsAuthenticated } = useUser()
-
-  const API_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : ''
+  const { login } = useUser()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
     setError('')
   }
 
-  const login = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
-      const response = await axios.post('/api/login', formData)
+      const payload = {
+        email: formData.email,
+        password: formData.password,
+      }
+
+      const response = await axios.post('/api/login', payload)
       const data = response.data
 
       if (data.success && data.user) {
-        // Explicitly set path: '/' on all set operations
-        Cookies.set('token', data.token || 'true', { expires: 7, path: '/' })
-        Cookies.set('user', JSON.stringify(data.user), { expires: 7, path: '/' })
-
-        setUser(data.user)
-        setIsAuthenticated(true)
-
+        login(data.user)
         router.push('/')
-        router.refresh()
       } else {
         setError(data.message || 'Login failed')
       }
-    } catch (err) {
-      setError('Login failed. Please check your credentials.')
+    } catch (err: any) {
+      setError(
+        err.response?.data?.message || 'Login failed. Please check your credentials.'
+      )
     }
   }
 
@@ -64,7 +62,7 @@ const Page = () => {
             <p className="text-xs text-stone-400 font-light">Sign in to access your mixology collection</p>
           </div>
 
-          <form onSubmit={login} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-stone-300 tracking-wide uppercase text-[10px] ml-1">Email Address</label>
               <div className="relative flex items-center">

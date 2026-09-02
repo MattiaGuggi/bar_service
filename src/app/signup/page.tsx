@@ -3,7 +3,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { userType } from '@/src/lib/types'
+import { userType } from '@/lib/types'
 import { User, Mail, Lock, UserPlus, AlertCircle, GlassWater } from 'lucide-react'
 
 const Page = () => {
@@ -18,16 +18,26 @@ const Page = () => {
   }
 
   const signup = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      const response = await axios.post(`${API_URL}/api/signup`, formData)
-      const data = response.data
+      const payload = {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+      };
 
-      if (data.success) router.push('/login')
-    } catch (err) {
-      setError('Signup failed. Please try again.')
+      const response = await axios.post('/api/signup', payload);
+      const data = response.data;
+
+      if (data.success) {
+        router.push('/login');
+      } else {
+        setError(data.message || 'Signup failed');
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Signup failed. Please try again.');
     }
-  }
+  };
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-stone-950 text-stone-100 px-4 overflow-hidden selection:bg-amber-500 selection:text-stone-950">

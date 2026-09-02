@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectDB } from '../../../lib/db';
 import bcrypt from 'bcrypt';
-import { createUser } from '@/src/lib/auth';
+import { createUser } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
     try {

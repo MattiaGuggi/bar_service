@@ -1,4 +1,4 @@
-import Navbar from '@/src/components/Navbar'
+import Navbar from '@/components/Navbar'
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (

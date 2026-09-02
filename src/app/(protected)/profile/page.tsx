@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
-import { useUser } from '@/src/context/UserContext'
-import Toast from '@/src/components/Toast'
+import { useUser } from '@/context/UserContext'
+import Toast from '@/components/Toast'
 import {
   User as UserIcon,
   Mail,

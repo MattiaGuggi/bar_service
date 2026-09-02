@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { drinks } from '@/lib/schema';
 
@@ -37,42 +37,6 @@ export async function GET() {
     console.error('Error fetching drinks', err);
     return NextResponse.json(
       { success: false, message: 'Failed to fetch drinks', error: err.message },
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-    const { name, ingredients, creator, image } = body;
-
-    if (!name || !creator) {
-      return NextResponse.json(
-        { success: false, message: 'Missing required fields: name or creator' },
-        { status: 400 }
-      );
-    }
-
-    const [newDrink] = await db
-      .insert(drinks)
-      .values({
-        name,
-        ingredients: ingredients || [],
-        creator,
-        image: image || null,
-      })
-      .returning();
-
-    return NextResponse.json({
-      success: true,
-      message: 'Drink created successfully!',
-      drink: newDrink,
-    });
-  } catch (err: any) {
-    console.error('Error creating drink', err);
-    return NextResponse.json(
-      { success: false, message: 'Error creating drink', error: err.message },
       { status: 500 }
     );
   }
